@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket IO Chat</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font: 13px Helvetica, Arial; background-color:rgb(233, 230, 230);}
+        form { background:cornsilk; padding: 3px; position: fixed; bottom: 0; width: 100%; border-color: #000; border-top-style: solid; border-top-width: 1px;}
+        form input { border-style: solid; border-width: 1px; padding: 10px; width: 85%; margin-right: .5%; }
+        form button { width: 9%; background: rgb(57, 185, 100); border: none; border-radius: 12px; padding: 10px; margin-left: 2%; }
+        #mgs { list-style-type: none; margin: 0; padding: 0; }
+        #msg li { padding: 5px 10px; }
+        #msg li:nth-child(odd) { background: #eee; }
+    </style>
+    <script src="../socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+  </head>
+  <body>
+    <ul id="msg"></ul>
+    <form action="/" method="POST" id="chatForm">
+      <input id="txt" autocomplete="off" autofocus="on" placeholder="type your message here..." /><button type="submit">Send</button>
+    </form>
+    <script>
+            var socket = io.connect('http://localhost:3000');
+
+            $('form').submit(function(e){
+                socket.emit('chat_message', $('#txt').val());
+                $('#txt').val('');
+                return false;
+            });
+
+            socket.on('chat_message', function(msg){
+                $('#msg').append($('<li>').html(msg));
+            });
+
+            socket.on('is_online', function(username) {
+                $('#msg').append($('<li>').html(username));
+            });
+
+            var username = prompt('Enter your name');
+            socket.emit('username', username);
+    </script>
+  </body>
+</html>
